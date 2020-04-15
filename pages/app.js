@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import auth0 from '../lib/auth0';
 import router from 'next/router';
 import { db } from '../lib/db';
+import { distance } from '../lib/geo';
 
 const App = (props) => {
     useEffect(() => {
@@ -18,19 +19,27 @@ const App = (props) => {
 
     return (
         <>
-            <h1>Pessoas proximas a você</h1>
-            <table>
-                {
-                    props.checkins.map(checkin => (
-                        <tr>
-                            <td>{checkin.id}</td>
-                            <td>{checkin.status}</td>
-                            <td>{checkin.coodinates.latitude}</td>
-                            <td>{JSON.stringify(checkin.coodinates)}</td>
+            <h1 className="text-2xl text-gray-900 font-bold py-4" >Pessoas proximas a você</h1>
+            <table className="table-auto w-full">
+                <thead>
+                    <tr className="bg-gray-700 text-white">
+                        <th className="border px-4 py-2">Status</th>
+                        <th className="border px-4 py-2">Latitude x Longitude</th>
+                        <th className="border px-4 py-2">Distancia</th>
 
-                        </tr>
-                    ))
-                }
+                    </tr>
+                </thead>
+                <tbody>
+                    {
+                        props.checkins.map((checkin, index) => (
+                            <tr className={index % 2 === 0 ? "bg-gray-500" : "bg-gray-400"}>
+                                <td className=" text-white text-center border px-4 py-2">{checkin.status} {checkin.id === props.user.sub && '(Seu status)'}</td>
+                                <td className=" text-white text-center border px-4 py-2">{checkin.coodinates.latitude} x {checkin.coodinates.longitude}</td>
+                                <td className=" text-white text-center border px-4 py-2">{checkin.distance}</td>
+                            </tr>
+                        ))
+                    }
+                </tbody>
             </table>
 
         </>
@@ -69,7 +78,14 @@ export async function getServerSideProps({ req, res }) {
                 coodinates: {
                     latitude: doc.data().coordinates.latitude,
                     longitude: doc.data().coordinates.longitude,
-                }
+                },
+                distance: distance(
+                    todaysData.coordinates.latitude, //-22.202920,
+                    todaysData.coordinates.longitude, //-45.943670,
+                    doc.data().coordinates.latitude,
+                    doc.data().coordinates.longitude,
+
+                ).toFixed(2),
             }));
 
             return {
