@@ -16,7 +16,7 @@ const Footer = () => (
             <SocialLink href="https://github.com/thiagoggth" label="GitHub" />
         </p>
         <p className="mt-3">Link do projeto no git:
-            <SocialLink href="https://github.com/thiagoggth" label="MyDailyStatus" />
+            <SocialLink href="https://github.com/thiagoggth/MyDailyStatus" label="MyDailyStatus" />
         </p>
 
     </footer>
